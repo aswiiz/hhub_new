@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Care Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-heartbeat"></i> Health <span>Care Hub</span>
+            </a>
+            <div class="nav-links">
+                {% if session.get('user_id') %}
+                <a href="/dashboard" class="{% if request.path == '/dashboard' %}active{% endif %}">Dashboard</a>
+                <a href="/diary" class="{% if request.path == '/diary' %}active{% endif %}">Diary</a>
+                <a href="/analyze" class="{% if request.path == '/analyze' %}active{% endif %}">Analyze</a>
+                <a href="/about" class="{% if request.path == '/about' %}active{% endif %}">About</a>
+                <div class="user-info">
+                    <span>Hi, {{ session.get('name') }}</span>
+                    <a href="/logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i></a>
+                </div>
+                {% else %}
+                <a href="/login" class="{% if request.path == '/login' %}active{% endif %}">Login</a>
+                <a href="/register" class="{% if request.path == '/register' %}active{% endif %}">Register</a>
+                <a href="/about" class="{% if request.path == '/about' %}active{% endif %}">About</a>
+                {% endif %}
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <main class="content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 Health Care Hub. Your health, our priority.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

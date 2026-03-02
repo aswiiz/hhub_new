@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="diary-header">
+    <h1><i class="fas fa-file-medical"></i> Daily Health Log</h1>
+    <p>Track your vitals and daily habits to monitor your well-being.</p>
+</div>
+
+<div class="card">
+    <h2 id="form-title"><i class="fas fa-edit"></i> Log Your Health Data</h2>
+    <form id="health-log-form" novalidate>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" class="form-control" required>
+                <div class="error-msg" id="err-date">Please select a date.</div>
+            </div>
+            <div class="form-group">
+                <label for="sleep_hours">Sleep Hours (0-24)</label>
+                <input type="number" id="sleep_hours" class="form-control" min="0" max="24" placeholder="e.g. 8"
+                    required>
+                <div class="error-msg" id="err-sleep_hours">Enter sleep hours (0-24).</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="steps">Steps Walked</label>
+                <input type="number" id="steps" class="form-control" min="0" placeholder="e.g. 10000" required>
+                <div class="error-msg" id="err-steps">Enter number of steps.</div>
+            </div>
+            <div class="form-group">
+                <label for="exercise_mins">Exercise Minutes</label>
+                <input type="number" id="exercise_mins" class="form-control" min="0" placeholder="e.g. 30" required>
+                <div class="error-msg" id="err-exercise_mins">Enter exercise minutes.</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="water_liters">Water Intake (Liters)</label>
+                <input type="number" id="water_liters" class="form-control" step="0.1" min="0" placeholder="e.g. 2.5"
+                    required>
+                <div class="error-msg" id="err-water_liters">Enter water intake.</div>
+            </div>
+            <div class="form-group">
+                <label for="junk_food">Junk Food Intake (0-3)</label>
+                <select id="junk_food" class="form-control" required>
+                    <option value="">Select Level</option>
+                    <option value="0">0 - None</option>
+                    <option value="1">1 - Low</option>
+                    <option value="2">2 - Moderate</option>
+                    <option value="3">3 - High</option>
+                </select>
+                <div class="error-msg" id="err-junk_food">Select junk food level.</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Smoking</label>
+                <div class="toggle-container">
+                    <label class="switch">
+                        <input type="checkbox" id="smoking">
+                        <span class="slider round"></span>
+                    </label>
+                    <span id="smoking-label">No</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="alcohol_units">Alcohol Intake (Units)</label>
+                <input type="number" id="alcohol_units" class="form-control" min="0" placeholder="e.g. 0" required>
+                <div class="error-msg" id="err-alcohol_units">Enter alcohol units.</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="weight">Weight (kg)</label>
+                <input type="number" id="weight" class="form-control" min="0" step="0.1" placeholder="e.g. 70" required>
+                <div class="error-msg" id="err-weight">Enter weight.</div>
+            </div>
+            <div class="form-group" id="height-group">
+                <label for="height">Height (cm)</label>
+                <input type="number" id="height" class="form-control" min="0" placeholder="e.g. 175" required>
+                <div class="error-msg" id="err-height">Enter height.</div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Save Log Entry</button>
+    </form>
+    <div id="success-banner" class="success-banner">Log entry saved successfully!</div>
+</div>
+
+<div class="diary-section">
+    <h2><i class="fas fa-table"></i> Recent Entries</h2>
+    <div class="table-responsive">
+        <table class="health-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Sleep</th>
+                    <th>Steps</th>
+                    <th>Exercise</th>
+                    <th>Water</th>
+                    <th>Junk</th>
+                    <th>Smoke</th>
+                    <th>Alcohol</th>
+                    <th>Weight</th>
+                </tr>
+            </thead>
+            <tbody id="log-table-body">
+                <!-- Entries will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

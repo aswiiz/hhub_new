@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Welcome, {{ user.name }}!</h1>
+    <p>Your personal health dashboard summary.</p>
+</div>
+
+<div class="dashboard-grid">
+    <div class="card profile-card">
+        <h2><i class="fas fa-id-card"></i> Profile Summary</h2>
+        <div class="profile-details">
+            <div class="detail-item">
+                <span class="label">Full Name:</span>
+                <span class="value">{{ user.name }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="label">Username:</span>
+                <span class="value">{{ user.username }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="label">Email:</span>
+                <span class="value">{{ user.email }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="label">Phone:</span>
+                <span class="value">{{ user.phone }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="label">Age:</span>
+                <span class="value">{{ user.age }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="label">Gender:</span>
+                <span class="value">{{ user.gender }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="label">Family History:</span>
+                <span class="value">{{ 'Yes' if user.family_history else 'No' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card actions-card">
+        <h2><i class="fas fa-rocket"></i> Quick Actions</h2>
+        <div class="action-buttons">
+            <a href="/diary" class="btn btn-primary"><i class="fas fa-book-medical"></i> Log Health Data</a>
+            <a href="/analyze" class="btn btn-secondary"><i class="fas fa-microscope"></i> Run Analysis</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
