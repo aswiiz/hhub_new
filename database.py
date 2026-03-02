@@ -1,8 +1,8 @@
 from pymongo import MongoClient
 import os
 
-# Using the provided MongoDB connection string
-MONGO_URI = "mongodb+srv://Vercel-Admin-healthcare-hub:terminator@healthcare-hub.oa7qjqu.mongodb.net/?appName=healthcare-hub"
+# Using environment variable for production, or hardcoded string for development
+MONGO_URI = os.environ.get('MONGO_URI', "mongodb+srv://Vercel-Admin-healthcare-hub:terminator@healthcare-hub.oa7qjqu.mongodb.net/?appName=healthcare-hub")
 
 def get_db():
     client = MongoClient(MONGO_URI)

@@ -161,7 +161,64 @@ def get_height():
         return jsonify({'height': entry['height_cm']})
     return jsonify({'height': None})
 
-@app.route('/api/predict', methods=['POST'])
+# Admin required decorator
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('is_admin'):
+            return redirect(url_for('admin_login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if username == 'admin' and password == 'admin123':
+            session['is_admin'] = True
+            return redirect(url_for('admin_dashboard'))
+        return render_template('admin/login.html', error="Invalid admin credentials.")
+    return render_template('admin/login.html')
+
+@app.route('/admin/dashboard')
+@admin_required
+def admin_dashboard():
+    db = get_db()
+    users = list(db.users.find())
+    return render_template('admin/dashboard.html', users=users)
+
+@app.route('/admin/user/delete/<user_id>', methods=['POST'])
+@admin_required
+def admin_delete_user(user_id):
+    db = get_db()
+    db.users.delete_one({'_id': ObjectId(user_id)})
+    db.daily_health_log.delete_many({'user_id': ObjectId(user_id)})
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/user/edit/<user_id>', methods=['GET', 'POST'])
+@admin_required
+def admin_edit_user(user_id):
+    db = get_db()
+    if request.method == 'POST':
+        data = request.form
+        db.users.update_one({'_id': ObjectId(user_id)}, {'$set': {
+            'name': data.get('name'),
+            'email': data.get('email'),
+            'age': int(data.get('age')),
+            'gender': data.get('gender'),
+            'phone': data.get('phone'),
+            'family_history': data.get('family_history') == 'Yes'
+        }})
+        return redirect(url_for('admin_dashboard'))
+    
+    user = db.users.find_one({'_id': ObjectId(user_id)})
+    return render_template('admin/user_edit.html', user=user)
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('is_admin', None)
+    return redirect(url_for('admin_login'))
 @login_required
 def predict():
     data = request.json
