@@ -215,6 +215,49 @@ def admin_edit_user(user_id):
     user = db.users.find_one({'_id': ObjectId(user_id)})
     return render_template('admin/user_edit.html', user=user)
 
+@app.route('/admin/user/logs/<user_id>')
+@admin_required
+def admin_user_logs(user_id):
+    db = get_db()
+    user = db.users.find_one({'_id': ObjectId(user_id)})
+    logs = list(db.daily_health_log.find({'user_id': ObjectId(user_id)}).sort('date', -1))
+    
+    # Optional: Calculate a current analysis result for the admin to see
+    analysis_result = "N/A"
+    if len(logs) >= 3:
+        # Take last 7 entries for averaging
+        recent_logs = logs[:7]
+        avg_sleep = sum(l.get('sleep_hours', 0) for l in recent_logs) / len(recent_logs)
+        avg_steps = sum(l.get('steps', 0) for l in recent_logs) / len(recent_logs)
+        avg_exercise = sum(l.get('exercise_mins', 0) for l in recent_logs) / len(recent_logs)
+        avg_junk = sum(l.get('junk_food', 0) for l in recent_logs) / len(recent_logs)
+        avg_alcohol = sum(l.get('alcohol_units', 0) for l in recent_logs) / len(recent_logs)
+        smoking_days = sum(1 for l in recent_logs if l.get('smoking'))
+        smoking_freq = smoking_days / len(recent_logs)
+        
+        latest_weight = logs[0].get('weight_kg', 70)
+        height = logs[0].get('height_cm')
+        bmi = None
+        if height:
+            bmi = latest_weight / ((height/100)**2)
+            
+        score = 0
+        if user.get('family_history'): score += 1
+        if bmi and (bmi < 18.5 or bmi > 25): score += 1
+        if bmi and bmi > 30: score += 1
+        if avg_sleep < 7: score += 1
+        if avg_steps < 5000: score += 1
+        if avg_exercise < 20: score += 1
+        if avg_junk >= 2: score += 1
+        if smoking_freq > 0.3: score += 2
+        if avg_alcohol > 2: score += 1
+
+        if score <= 2: analysis_result = "Low Chance"
+        elif score <= 5: analysis_result = "Moderate Chance"
+        else: analysis_result = "High Chance"
+
+    return render_template('admin/user_logs.html', user=user, logs=logs, analysis_result=analysis_result)
+
 @app.route('/admin/logout')
 def admin_logout():
     session.pop('is_admin', None)

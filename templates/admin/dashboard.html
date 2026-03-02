@@ -30,6 +30,8 @@
                     <td>{{ user.email }}</td>
                     <td>{{ user.phone }}</td>
                     <td class="admin-table-actions">
+                        <a href="/admin/user/logs/{{ user._id }}" class="btn btn-sm btn-outline"><i
+                                class="fas fa-history"></i> Logs</a>
                         <a href="/admin/user/edit/{{ user._id }}" class="btn btn-sm btn-secondary"><i
                                 class="fas fa-edit"></i> Edit</a>
                         <form action="/admin/user/delete/{{ user._id }}" method="POST" style="display:inline;"
