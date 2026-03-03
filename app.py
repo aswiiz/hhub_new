@@ -4,11 +4,20 @@ from datetime import datetime
 from bson import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+import joblib
+import numpy as np
 from functools import wraps
 
 app = Flask(__name__)
 # Get secret key from environment or generate a random one for development
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
+
+# Load the trained model
+MODEL_PATH = os.path.join(os.path.dirname(__file__), 'health_model.pkl')
+try:
+    model = joblib.load(MODEL_PATH)
+except:
+    model = None
 
 # Login required decorator
 def login_required(f):
@@ -269,27 +278,90 @@ def predict():
     db = get_db()
     user = db.users.find_one({'_id': ObjectId(session['user_id'])})
     
-    score = 0
+    # Helper to map age to numeric group
+    # 10–18 → 18, 19–30 → 30, 31–50 → 50, 51–75 → 75
+    def get_age_group(age):
+        if age <= 18: return 18
+        if age <= 30: return 30
+        if age <= 50: return 50
+        return 75
+
+    # Features: age, age_group, sleep, steps, exercise, water, junk, smoking, alcohol
+    age = user.get('age', 30)
+    age_group = get_age_group(age)
     
-    # Family History Risk
-    if user.get('family_history'):
-        score += 1
+    avg_sleep = data.get('avg_sleep', 8)
+    avg_steps = data.get('avg_steps', 8000)
+    avg_exercise = data.get('avg_exercise', 30)
+    avg_water = data.get('avg_water', 2.0)
+    avg_junk = data.get('avg_junk', 1)
+    smoking_freq = 1 if data.get('smoking_freq', 0) > 0 else 0
+    avg_alcohol = data.get('avg_alcohol', 0)
+    
+    features = [[age, age_group, avg_sleep, avg_steps, avg_exercise, avg_water, avg_junk, smoking_freq, avg_alcohol]]
+    
+    if model:
+        prediction_index = int(model.predict(features)[0])
+        results = ["Low Chance", "High Chance"]
+        result = results[prediction_index] if prediction_index < len(results) else "Unknown"
+    else:
+        # Fallback simpler logic
+        score = 0
+        if user.get('family_history'): score += 1
+        if avg_sleep < 7: score += 1
+        if avg_steps < 5000: score += 1
+        if avg_exercise < 20: score += 1
+        if avg_junk >= 2: score += 1
+        if smoking_freq > 0: score += 2
+        
+        result = "Low Chance" if score <= 3 else "High Chance"
 
-    bmi = data.get('bmi', 22)
-    if bmi < 18.5 or bmi > 25: score += 1
-    if bmi > 30: score += 1
-    if data.get('avg_sleep', 8) < 7: score += 1
-    if data.get('avg_steps', 8000) < 5000: score += 1
-    if data.get('avg_exercise', 30) < 20: score += 1
-    if data.get('avg_junk', 1) >= 2: score += 1
-    if data.get('smoking_freq', 0) > 0.3: score += 2
-    if data.get('avg_alcohol', 0) > 2: score += 1
+    # Generate personalized recommendations
+    recs = []
+    if avg_sleep < 7:
+        recs.append("Your sleep average is low. Aim for 7-9 hours to improve recovery.")
+    elif avg_sleep > 9:
+        recs.append("You are sleeping more than average. Focus on sleep quality over quantity.")
+    else:
+        recs.append("Great job maintaining a healthy sleep schedule!")
 
-    if score <= 2: result = "Low Chance"
-    elif score <= 5: result = "Moderate Chance"
-    else: result = "High Chance"
+    if avg_steps < 5000:
+        recs.append("Daily activity levels are low. Try adding a 15-minute walk to your day.")
+    elif avg_steps < 10000:
+        recs.append("You're moving! Aim to hit 10,000 steps daily for optimal health.")
+    else:
+        recs.append("Excellent activity levels! Keep moving.")
 
-    return jsonify({"chance": result})
+    if bmi > 25:
+        recs.append("Your BMI is above the healthy range. Consider consulting a nutritionist.")
+    elif bmi < 18.5:
+        recs.append("Your BMI is below the healthy range. Focus on nutrient-dense meals.")
+
+    if avg_exercise < 20:
+        recs.append("Physical activity is essential. Aim for at least 150 mins of moderate activity per week.")
+    
+    if avg_junk >= 2:
+        recs.append("Frequent junk food consumption detected. Try swapping one snack for a fruit.")
+
+    if smoking_freq > 0:
+        recs.append("Smoking significantly increases health risks. Consider professional support to quit.")
+
+    if avg_alcohol > 2:
+        recs.append("Alcohol intake is higher than recommended. Try reducing consumption for better liver health.")
+
+    if family_history and result != "Low Chance":
+        recs.append("Given your family history, regular medical check-ups are highly recommended.")
+
+    # Ensure we always return some general good advice if many are missing
+    if len(recs) < 3:
+        if result == "Low Chance":
+            recs.append("Stay hydrated and continue your healthy lifestyle habits.")
+        recs.append("Consistency is key to long-term health improvements.")
+
+    return jsonify({
+        "chance": result,
+        "recommendations": recs[:5] # Limit to top 5 most relevant
+    })
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

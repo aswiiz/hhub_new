@@ -28,7 +28,7 @@ Health Care Hub - Development Work Log
    - Added logical height storage (stored once, reused for BMI calculation).
 
 6. Data-Driven Analysis
-   - Built a 7-day aggregation algorithm to calculate lifestyle averages.
+   - Built a 3-day aggregation algorithm to calculate lifestyle averages.
    - Integrated rule-based risk assessment factorizing Family History and BMI.
    - Created a clean analysis result UI with dynamic health recommendations.
    - Added a strict disclaimer box for medical safety and privacy.
@@ -38,7 +38,19 @@ Health Care Hub - Development Work Log
    - Implemented User Management: Create, Edit, and Delete users.
    - Added "View Logs" capability for admins to supervise user entries and assessments.
 
-8. Deployment Readiness
-   - Created requirements.txt and render.yaml for automated hosting.
-   - Configured app.py to use secure environment variables for production.
-   - Verified Git repository structure and pushed final code to GitHub.
+8. Machine Learning & Prediction
+   - Developed `train_model.py` to train a Random Forest classifier.
+   - Performed feature engineering: Age grouping, binary smoking flags, and multi-day averaging.
+   - Integrated the trained model (`health_model.pkl`) into the Flask API.
+   - Implemented a rule-based fallback system for prediction resilience.
+
+9. Recommendation Engine & UI
+   - Created a dynamic recommendation system generating personalized health tips.
+   - Optimized UI to display the top 5 most critical health warnings/tips.
+   - Updated history tables to reflect the new predictive metrics.
+
+10. Deployment & Optimization
+    - Added Scikit-Learn and Joblib to requirements for ML support in production.
+    - Optimized MongoDB queries for faster data aggregation during analysis.
+    - Verified Git repository structure and pushed final code to GitHub.
+    - Configured Render blueprint for seamless continuous deployment.

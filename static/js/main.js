@@ -225,32 +225,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 healthBadge.innerText = prediction.chance;
 
                 healthBadge.className = 'health-badge'; // Reset
-                let recommendations = [];
+                let recommendations = prediction.recommendations || [];
 
                 if (prediction.chance === 'Low Chance') {
                     healthBadge.classList.add('badge-low');
-                    recommendations = [
-                        "Maintain your current exercise routine.",
-                        "Continue prioritizing 7-9 hours of sleep.",
-                        "Keep up the good hydration habits.",
-                        "Consider adding more variety to your whole food intake."
-                    ];
                 } else if (prediction.chance === 'Moderate Chance') {
                     healthBadge.classList.add('badge-moderate');
-                    recommendations = [
-                        "Try to increase your daily step count to over 7,000.",
-                        "Aim for at least 150 minutes of moderate exercise per week.",
-                        "Reduced processed food intake and focus on lean proteins.",
-                        "Monitor your sleep quality; avoid screens 1 hour before bed."
-                    ];
                 } else {
                     healthBadge.classList.add('badge-high');
-                    recommendations = [
-                        "Consult a healthcare professional for a check-up.",
-                        "Prioritize consistent sleep and stress management.",
-                        "Significantly reduce sugar and processed food intake.",
-                        "Initiate a gentle daily walking routine (15-20 mins) if safe."
-                    ];
                 }
 
                 recList.innerHTML = recommendations.map(rec => `<li>${rec}</li>`).join('');
