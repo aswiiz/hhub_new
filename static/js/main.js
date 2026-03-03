@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                // 3. Take last 3 days (or minimum 3)
+                 // 3. Take last 3 days (or minimum 3)
                 const recentLogs = logs.slice(0, 3);
                 const count = recentLogs.length;
 
