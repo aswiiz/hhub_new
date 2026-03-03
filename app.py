@@ -225,8 +225,8 @@ def admin_user_logs(user_id):
     # Optional: Calculate a current analysis result for the admin to see
     analysis_result = "N/A"
     if len(logs) >= 3:
-        # Take last 7 entries for averaging
-        recent_logs = logs[:7]
+        # Take last 3 entries for averaging
+        recent_logs = logs[:3]
         avg_sleep = sum(l.get('sleep_hours', 0) for l in recent_logs) / len(recent_logs)
         avg_steps = sum(l.get('steps', 0) for l in recent_logs) / len(recent_logs)
         avg_exercise = sum(l.get('exercise_mins', 0) for l in recent_logs) / len(recent_logs)

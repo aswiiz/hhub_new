@@ -171,8 +171,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                // 3. Take last 7 days (or minimum 3)
-                const recentLogs = logs.slice(0, 7);
+                // 3. Take last 3 days (or minimum 3)
+                const recentLogs = logs.slice(0, 3);
                 const count = recentLogs.length;
 
                 // 4. Calculate averages
