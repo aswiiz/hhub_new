@@ -262,6 +262,7 @@ def admin_user_logs(user_id):
 def admin_logout():
     session.pop('is_admin', None)
     return redirect(url_for('admin_login'))
+@app.route('/api/predict', methods=['POST'])
 @login_required
 def predict():
     data = request.json
