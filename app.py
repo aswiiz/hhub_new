@@ -297,6 +297,8 @@ def predict():
     avg_junk = data.get('avg_junk', 1)
     smoking_freq = 1 if data.get('smoking_freq', 0) > 0 else 0
     avg_alcohol = data.get('avg_alcohol', 0)
+    bmi = data.get('bmi')
+    family_history = user.get('family_history', False)
     
     features = [[age, age_group, avg_sleep, avg_steps, avg_exercise, avg_water, avg_junk, smoking_freq, avg_alcohol]]
     
@@ -307,7 +309,7 @@ def predict():
     else:
         # Fallback simpler logic
         score = 0
-        if user.get('family_history'): score += 1
+        if family_history: score += 1
         if avg_sleep < 7: score += 1
         if avg_steps < 5000: score += 1
         if avg_exercise < 20: score += 1
