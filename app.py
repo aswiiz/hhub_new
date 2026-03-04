@@ -100,8 +100,13 @@ def login():
     if request.method == 'POST':
         identifier = request.form.get('identifier')
         password = request.form.get('password')
-        db = get_db()
         
+        # Check for Admin credentials first
+        if identifier == 'admin' and password == 'admin123':
+            session['is_admin'] = True
+            return redirect(url_for('admin_dashboard'))
+            
+        db = get_db()
         user = db.users.find_one({'$or': [{'username': identifier}, {'phone': identifier}]})
         
         if user and check_password_hash(user['password'], password):
