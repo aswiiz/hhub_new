@@ -171,9 +171,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                // 3. Take last 3 days (or minimum 3)
-                const recentLogs = logs.slice(0, 3);
+                // 3. Take latest complete set of 3 logs (skipping newest if not a full set of 3)
+                const skip = logs.length % 3;
+                const recentLogs = logs.slice(skip, skip + 3);
                 const count = recentLogs.length;
+
+                console.log(`Analyzing set of 3 (skipped ${skip} newest logs out of ${logs.length})`);
+
 
                 // 4. Calculate averages
                 const averages = recentLogs.reduce((acc, log) => {
@@ -217,11 +221,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 analyzeLoading.style.display = 'none';
                 analyzeResult.style.display = 'block';
 
-                const daysCount = document.getElementById('days-count');
-                const healthBadge = document.getElementById('health-badge');
-                const recList = document.getElementById('recommendations-list');
+                const skippedInfo = document.getElementById('skipped-info');
 
                 daysCount.innerText = count;
+                if (skippedInfo) {
+                    skippedInfo.innerText = skip > 0 ? `(Skipped ${skip} newest logs to form a set of 3)` : '';
+                }
+
                 healthBadge.innerText = prediction.chance;
 
                 healthBadge.className = 'health-badge'; // Reset
