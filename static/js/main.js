@@ -305,14 +305,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LOADER ---
     const loaderWrapper = document.getElementById('loader-wrapper');
     if (loaderWrapper) {
-        // Set timeout for 10 seconds (10000ms)
-        setTimeout(() => {
-            loaderWrapper.classList.add('fade-out');
-            // Remove from DOM after transition completes (0.8s)
+        if (sessionStorage.getItem('splash_shown')) {
+            loaderWrapper.style.display = 'none';
+        } else {
+            // Set timeout for 10 seconds (10000ms) for first load
             setTimeout(() => {
-                loaderWrapper.style.display = 'none';
-            }, 800);
-        }, 10000);
+                loaderWrapper.classList.add('fade-out');
+                // Remove from DOM after transition completes (0.8s)
+                setTimeout(() => {
+                    loaderWrapper.style.display = 'none';
+                    sessionStorage.setItem('splash_shown', 'true');
+                }, 800);
+            }, 10000);
+        }
     }
 });
 
