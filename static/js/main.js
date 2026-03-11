@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                 // 3. Take last 3 days (or minimum 3)
+                // 3. Take last 3 days (or minimum 3)
                 const recentLogs = logs.slice(0, 3);
                 const count = recentLogs.length;
 
@@ -252,4 +252,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // --- LOADER ---
+    const loaderWrapper = document.getElementById('loader-wrapper');
+    if (loaderWrapper) {
+        // Set timeout for 10 seconds (10000ms)
+        setTimeout(() => {
+            loaderWrapper.classList.add('fade-out');
+            // Remove from DOM after transition completes (0.8s)
+            setTimeout(() => {
+                loaderWrapper.style.display = 'none';
+            }, 800);
+        }, 10000);
+    }
 });
+
