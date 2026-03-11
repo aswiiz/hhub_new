@@ -305,23 +305,39 @@ def predict():
     bmi = data.get('bmi')
     family_history = user.get('family_history', False)
     
-    features = [[age, age_group, avg_sleep, avg_steps, avg_exercise, avg_water, avg_junk, smoking_freq, avg_alcohol]]
+    # 1. Base Score calculation (incorporating all factors)
+    score = 0
+    if family_history: score += 1.0
     
+    # BMI Scoring: Underweight (<18.5) or Overweight (>25)
+    if bmi:
+        if bmi < 18.5 or (bmi > 25 and bmi <= 30): score += 1.0
+        elif bmi > 30: score += 2.0 # Obese
+
+    if avg_sleep < 7: score += 1.0
+    if avg_steps < 5000: score += 1.0
+    elif avg_steps < 8000: score += 0.5
+    
+    if avg_exercise < 20: score += 1.0
+    if avg_junk >= 2: score += 1.0
+    if smoking_freq > 0: score += 2.0
+    if avg_alcohol > 2: score += 1.0
+
+    # 2. Model Prediction (if available) - serves as a weight/multiplier or extra point
+    model_risk = 0
     if model:
+        features = [[age, age_group, avg_sleep, avg_steps, avg_exercise, avg_water, avg_junk, smoking_freq, avg_alcohol]]
         prediction_index = int(model.predict(features)[0])
-        results = ["Low Chance", "High Chance"]
-        result = results[prediction_index] if prediction_index < len(results) else "Unknown"
+        if prediction_index == 1: # High in model
+            score += 1.5
+
+    # 3. Final Classification
+    if score <= 2.5:
+        result = "Low Chance"
+    elif score <= 5.5:
+        result = "Moderate Chance"
     else:
-        # Fallback simpler logic
-        score = 0
-        if family_history: score += 1
-        if avg_sleep < 7: score += 1
-        if avg_steps < 5000: score += 1
-        if avg_exercise < 20: score += 1
-        if avg_junk >= 2: score += 1
-        if smoking_freq > 0: score += 2
-        
-        result = "Low Chance" if score <= 3 else "High Chance"
+        result = "High Chance"
 
     # Generate personalized recommendations
     recs = []
@@ -359,6 +375,15 @@ def predict():
     if family_history and result != "Low Chance":
         recs.append("Given your family history, regular medical check-ups are highly recommended.")
 
+    # Sort recommendations: Critical ones first if risk is not Low
+    if result != "Low Chance":
+        # Prioritize smoking, alcohol, BMI, and family history
+        def rec_priority(r):
+            if "Smoking" in r or "BMI" in r or "Alcohol" in r or "family history" in r:
+                return 0
+            return 1
+        recs.sort(key=rec_priority)
+
     # Ensure we always return some general good advice if many are missing
     if len(recs) < 3:
         if result == "Low Chance":
@@ -367,7 +392,8 @@ def predict():
 
     return jsonify({
         "chance": result,
-        "recommendations": recs[:5] # Limit to top 5 most relevant
+        "recommendations": recs[:5], # Limit to top 5
+        "score": score # Optional debugging
     })
 
 if __name__ == '__main__':

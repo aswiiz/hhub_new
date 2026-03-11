@@ -155,31 +155,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const daysCount = document.getElementById('days-count');
     const healthBadge = document.getElementById('health-badge');
     const recList = document.getElementById('recommendations-list');
+    const periodSelect = document.getElementById('period-select');
+    const periodSelectorContainer = document.getElementById('period-selector-container');
+    const healthBadgeElement = document.getElementById('health-badge'); // reuse
+
+    let allPeriods = [];
+
+    async function loadPeriods() {
+        if (!periodSelect) return;
+        try {
+            const response = await fetch('/api/diary');
+            const logs = await response.json();
+
+            if (logs.length < 3) {
+                if (periodSelectorContainer) periodSelectorContainer.style.display = 'none';
+                return;
+            }
+
+            allPeriods = [];
+            for (let i = 0; i + 2 < logs.length; i += 3) {
+                allPeriods.push(logs.slice(i, i + 3));
+            }
+
+            if (allPeriods.length > 0 && periodSelectorContainer) {
+                periodSelectorContainer.style.display = 'block';
+                periodSelect.innerHTML = allPeriods.map((p, idx) => {
+                    const startShort = p[2].date.split('-').slice(1).join('/');
+                    const endShort = p[0].date.split('-').slice(1).join('/');
+                    return `<option value="${idx}">${idx === 0 ? 'Latest Period' : 'Previous Period'} (${startShort} - ${endShort})</option>`;
+                }).join('');
+            }
+        } catch (e) { console.error(e); }
+    }
 
     if (runAnalysisBtn) {
+        loadPeriods();
         runAnalysisBtn.addEventListener('click', async () => {
             analyzeInitial.style.display = 'none';
             analyzeLoading.style.display = 'block';
 
             try {
-                // 1. Fetch all records
-                const response = await fetch('/api/diary');
-                const logs = await response.json();
+                // 1. Get logs from periods or fetch if empty
+                let recentLogs = [];
+                let skip = 0;
 
-                // 2. Check minimum data requirement
-                if (logs.length < 3) {
-                    analyzeLoading.style.display = 'none';
-                    analyzeError.style.display = 'block';
-                    errorMessage.innerText = "Minimum 3 days of data required for analysis.";
-                    return;
+                if (allPeriods.length > 0 && periodSelect) {
+                    recentLogs = allPeriods[parseInt(periodSelect.value)];
+                } else {
+                    const response = await fetch('/api/diary');
+                    const logs = await response.json();
+                    if (logs.length < 3) {
+                        analyzeLoading.style.display = 'none';
+                        analyzeError.style.display = 'block';
+                        errorMessage.innerText = "Minimum 3 days of data required for analysis.";
+                        return;
+                    }
+                    skip = logs.length % 3;
+                    recentLogs = logs.slice(skip, skip + 3);
                 }
 
-                // 3. Take latest complete set of 3 logs (skipping newest if not a full set of 3)
-                const skip = logs.length % 3;
-                const recentLogs = logs.slice(skip, skip + 3);
                 const count = recentLogs.length;
-
-                console.log(`Analyzing set of 3 (skipped ${skip} newest logs out of ${logs.length})`);
+                console.log(`Analyzing period with ${count} logs`);
 
 
                 // 4. Calculate averages
@@ -227,8 +263,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const skippedInfo = document.getElementById('skipped-info');
 
                 if (daysCount) daysCount.innerText = count;
-                if (skippedInfo) {
-                    skippedInfo.innerText = skip > 0 ? `(Skipped ${skip} newest logs to form a set of 3)` : '';
+                if (skippedInfo && periodSelect) {
+                    const selectedText = periodSelect.options[periodSelect.selectedIndex].text;
+                    const dateMatch = selectedText.match(/\((.*)\)/);
+                    skippedInfo.innerText = dateMatch ? `(${dateMatch[1]})` : '';
                 }
 
                 if (healthBadge) healthBadge.innerText = prediction.chance;
