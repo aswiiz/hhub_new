@@ -152,6 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultIcon = document.getElementById('result-icon');
     const metricsSummary = document.getElementById('metrics-summary');
     const errorMessage = document.getElementById('error-message');
+    const daysCount = document.getElementById('days-count');
+    const healthBadge = document.getElementById('health-badge');
+    const recList = document.getElementById('recommendations-list');
 
     if (runAnalysisBtn) {
         runAnalysisBtn.addEventListener('click', async () => {
@@ -223,25 +226,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const skippedInfo = document.getElementById('skipped-info');
 
-                daysCount.innerText = count;
+                if (daysCount) daysCount.innerText = count;
                 if (skippedInfo) {
                     skippedInfo.innerText = skip > 0 ? `(Skipped ${skip} newest logs to form a set of 3)` : '';
                 }
 
-                healthBadge.innerText = prediction.chance;
+                if (healthBadge) healthBadge.innerText = prediction.chance;
 
-                healthBadge.className = 'health-badge'; // Reset
+                if (healthBadge) healthBadge.className = 'health-badge'; // Reset
                 let recommendations = prediction.recommendations || [];
 
-                if (prediction.chance === 'Low Chance') {
-                    healthBadge.classList.add('badge-low');
-                } else if (prediction.chance === 'Moderate Chance') {
-                    healthBadge.classList.add('badge-moderate');
-                } else {
-                    healthBadge.classList.add('badge-high');
+                if (healthBadge) {
+                    if (prediction.chance === 'Low Chance') {
+                        healthBadge.classList.add('badge-low');
+                    } else if (prediction.chance === 'Moderate Chance') {
+                        healthBadge.classList.add('badge-moderate');
+                    } else {
+                        healthBadge.classList.add('badge-high');
+                    }
                 }
 
-                recList.innerHTML = recommendations.map(rec => `<li>${rec}</li>`).join('');
+                if (recList) recList.innerHTML = recommendations.map(rec => `<li>${rec}</li>`).join('');
 
                 // Display metrics summary
                 metricsSummary.innerHTML = `
