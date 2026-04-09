@@ -1,13 +1,41 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Mobile menu toggle
     const menuToggle = document.querySelector('.menu-toggle');
-    const navContainer = document.querySelector('.nav-container');
+    const navRight = document.querySelector('.nav-right');
 
-    if (menuToggle) {
+    if (menuToggle && navRight) {
         menuToggle.addEventListener('click', () => {
-            navContainer.classList.toggle('active');
+            navRight.classList.toggle('active');
         });
     }
+
+    // --- THEME SWITCHER ---
+    const themeBtns = document.querySelectorAll('.theme-btn');
+    const currentTheme = localStorage.getItem('theme') || 'light';
+
+    const setTheme = (theme) => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+
+        // Update active button state
+        themeBtns.forEach(btn => {
+            if (btn.getAttribute('data-theme') === theme) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    };
+
+    // Initialize theme
+    setTheme(currentTheme);
+
+    themeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const theme = btn.getAttribute('data-theme');
+            setTheme(theme);
+        });
+    });
 
     // --- DIARY (DAILY HEALTH LOG) ---
     const logForm = document.getElementById('health-log-form');

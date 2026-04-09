@@ -9,6 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script>
+        // Theme management
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+
         // Check if splash has already been shown in this session
         if (sessionStorage.getItem('splash_shown')) {
             document.documentElement.classList.add('hide-loader');
@@ -37,27 +41,39 @@
             <a href="/" class="logo">
                 <i class="fas fa-heartbeat"></i> Health <span>Care Hub</span>
             </a>
-            <div class="nav-links">
-                {% if session.get('user_id') %}
-                <a href="/dashboard" class="{% if request.path == '/dashboard' %}active{% endif %}">Dashboard</a>
-                <a href="/diary" class="{% if request.path == '/diary' %}active{% endif %}">Diary</a>
-                <a href="/analyze" class="{% if request.path == '/analyze' %}active{% endif %}">Analyze</a>
-                <a href="/assistant" class="{% if request.path == '/assistant' %}active{% endif %}">Assistant <i class="fas fa-comment-medical"></i></a>
-                <a href="/about" class="{% if request.path == '/about' %}active{% endif %}">About</a>
-                <div class="user-info">
-                    <span>Hi, {{ session.get('name') }}</span>
-                    <a href="/logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i></a>
+            <div class="nav-right">
+                <div class="theme-switcher">
+                    <button class="theme-btn" data-theme="light" title="Light Mode"><i class="fas fa-sun"></i></button>
+                    <button class="theme-btn" data-theme="dark" title="Dark Mode"><i class="fas fa-moon"></i></button>
+                    <button class="theme-btn nature" data-theme="nature" title="Nature"><i
+                            class="fas fa-leaf"></i></button>
+                    <button class="theme-btn royal" data-theme="royal" title="Royal"><i
+                            class="fas fa-crown"></i></button>
+                    <button class="theme-btn passion" data-theme="passion" title="Passion"><i
+                            class="fas fa-fire"></i></button>
                 </div>
-                {% else %}
-                <a href="/login" class="{% if request.path == '/login' %}active{% endif %}">Login</a>
-                <a href="/register" class="{% if request.path == '/register' %}active{% endif %}">Register</a>
-                <a href="/about" class="{% if request.path == '/about' %}active{% endif %}">About</a>
-                {% endif %}
+                <div class="nav-links">
+                    {% if session.get('user_id') %}
+                    <a href="/dashboard" class="{% if request.path == '/dashboard' %}active{% endif %}">Dashboard</a>
+                    <a href="/diary" class="{% if request.path == '/diary' %}active{% endif %}">Diary</a>
+                    <a href="/analyze" class="{% if request.path == '/analyze' %}active{% endif %}">Analyze</a>
+                    <a href="/assistant" class="{% if request.path == '/assistant' %}active{% endif %}">Assistant <i
+                            class="fas fa-comment-medical"></i></a>
+                    <a href="/about" class="{% if request.path == '/about' %}active{% endif %}">About</a>
+                    <div class="user-info">
+                        <span>Hi, {{ session.get('name') }}</span>
+                        <a href="/logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i></a>
+                    </div>
+                    {% else %}
+                    <a href="/login" class="{% if request.path == '/login' %}active{% endif %}">Login</a>
+                    <a href="/register" class="{% if request.path == '/register' %}active{% endif %}">Register</a>
+                    <a href="/about" class="{% if request.path == '/about' %}active{% endif %}">About</a>
+                    {% endif %}
+                </div>
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
             </div>
-            <div class="menu-toggle">
-                <i class="fas fa-bars"></i>
-            </div>
-        </div>
     </nav>
 
     <main class="content">

@@ -1,4 +1,5 @@
 :root {
+    /* Default Light Theme */
     --primary: #2563eb;
     --primary-light: #dbeafe;
     --primary-dark: #1e40af;
@@ -8,8 +9,43 @@
     --text: #1e293b;
     --text-muted: #64748b;
     --border: #e2e8f0;
+    --card-bg: #ffffff;
+    --nav-bg: rgba(255, 255, 255, 0.8);
     --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+    --bg: #0f172a;
+    --white: #1e293b;
+    --text: #f8fafc;
+    --text-muted: #94a3b8;
+    --border: #334155;
+    --card-bg: #1e293b;
+    --nav-bg: rgba(15, 23, 42, 0.8);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+}
+
+[data-theme="nature"] {
+    --primary: #059669;
+    --primary-light: #d1fae5;
+    --primary-dark: #047857;
+    --secondary: #10b981;
+}
+
+[data-theme="passion"] {
+    --primary: #dc2626;
+    --primary-light: #fee2e2;
+    --primary-dark: #b91c1c;
+    --secondary: #f87171;
+}
+
+[data-theme="royal"] {
+    --primary: #7c3aed;
+    --primary-light: #ede9fe;
+    --primary-dark: #6d28d9;
+    --secondary: #a78bfa;
 }
 
 * {
@@ -23,6 +59,7 @@ body {
     background-color: var(--bg);
     color: var(--text);
     line-height: 1.6;
+    transition: var(--transition);
 }
 
 .nav-container {
@@ -35,13 +72,14 @@ body {
 }
 
 .navbar {
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--nav-bg);
     backdrop-filter: blur(10px);
     position: sticky;
     top: 0;
     z-index: 1000;
     border-bottom: 1px solid var(--border);
     box-shadow: var(--shadow);
+    transition: var(--transition);
 }
 
 .logo {
@@ -154,6 +192,68 @@ body {
     border-radius: 2px;
 }
 
+/* Theme Switcher Styles */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.theme-switcher {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 2rem;
+}
+
+.theme-btn {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    background: var(--border);
+    color: var(--text-muted);
+    transition: var(--transition);
+}
+
+.theme-btn:hover {
+    transform: scale(1.1);
+}
+
+.theme-btn.active {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--white);
+    box-shadow: var(--shadow);
+}
+
+.theme-btn[data-theme="dark"] {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+.theme-btn.nature {
+    background: #059669;
+    color: #fff;
+}
+
+.theme-btn.royal {
+    background: #7c3aed;
+    color: #fff;
+}
+
+.theme-btn.passion {
+    background: #dc2626;
+    color: #fff;
+}
+
 .menu-toggle {
     display: none;
     font-size: 1.5rem;
@@ -168,11 +268,12 @@ body {
 }
 
 .card {
-    background: var(--white);
+    background: var(--card-bg);
     padding: 2rem;
     border-radius: 1rem;
     box-shadow: var(--shadow);
     margin-bottom: 2rem;
+    transition: var(--transition);
 }
 
 .btn {
@@ -333,9 +434,11 @@ body {
     text-align: left;
     margin: 2rem 0;
     padding: 1.5rem;
-    background: #f8fafc;
+    background: var(--bg);
     border-radius: 0.5rem;
     border-left: 4px solid var(--primary);
+    border: 1px solid var(--border);
+    border-left-width: 4px;
 }
 
 .recommendations-box h3 {
@@ -481,8 +584,9 @@ input:checked+.slider:before {
     gap: 1rem;
     margin-top: 2rem;
     padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--bg);
     border-radius: 0.5rem;
+    border: 1px solid var(--border);
 }
 
 .metric-item {
@@ -562,20 +666,29 @@ input:checked+.slider:before {
         display: none;
     }
 
+    .theme-switcher {
+        gap: 0.25rem;
+    }
+
+    .nav-right {
+        gap: 1rem;
+    }
+
     .menu-toggle {
         display: block;
     }
 
-    .nav-container.active .nav-links {
+    .nav-right.active .nav-links {
         display: flex;
         flex-direction: column;
         position: absolute;
         top: 100%;
         left: 0;
         width: 100%;
-        background: var(--white);
+        background: var(--card-bg);
         padding: 1rem;
         box-shadow: var(--shadow);
+        border-bottom: 1px solid var(--border);
     }
 }
 
@@ -586,7 +699,7 @@ input:checked+.slider:before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--bg);
     backdrop-filter: blur(10px);
     display: flex;
     justify-content: center;
