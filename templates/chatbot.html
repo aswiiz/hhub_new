@@ -1,0 +1,406 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="assistant-container">
+    <div class="assistant-header">
+        <div class="assistant-info">
+            <div class="assistant-avatar">
+                <i class="fas fa-user-md"></i>
+                <div class="online-indicator"></div>
+            </div>
+            <div class="assistant-title">
+                <h1>Health Assistant</h1>
+                <p>AI-Powered Health Guide</p>
+            </div>
+        </div>
+        <div class="assistant-actions">
+            <button id="clear-chat" title="Clear Conversation"><i class="fas fa-trash-alt"></i></button>
+        </div>
+    </div>
+
+    <div class="chat-window" id="chat-window">
+        <div class="message assistant">
+            <div class="message-content">
+                Hello! I am your Health AI Assistant. You can ask me about symptoms, healthy habits, or general health
+                concerns.
+                <br><br>
+                <small><em>Disclaimer: I am an AI, not a doctor. For emergencies, please call professional medical
+                        services.</em></small>
+            </div>
+            <div class="message-time">Just now</div>
+        </div>
+    </div>
+
+    <div class="chat-input-area">
+        <div class="suggestions" id="suggestions">
+            <button class="suggestion-btn">What are signs of dehydration?</button>
+            <button class="suggestion-btn">Benefits of 8 hours of sleep?</button>
+            <button class="suggestion-btn">How to reduce daily stress?</button>
+        </div>
+        <form id="chat-form" class="chat-form">
+            <input type="text" id="user-input" placeholder="Type your health doubt here..." autocomplete="off" required>
+            <button type="submit" id="send-btn"><i class="fas fa-paper-plane"></i></button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .assistant-container {
+        max-width: 900px;
+        margin: 20px auto;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 180px);
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .assistant-header {
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .assistant-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .assistant-avatar {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        font-size: 24px;
+        color: white;
+    }
+
+    .online-indicator {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        width: 12px;
+        height: 12px;
+        background: #4cd137;
+        border: 2px solid #1a1a1a;
+        border-radius: 50%;
+    }
+
+    .assistant-title h1 {
+        font-size: 1.2rem;
+        margin: 0;
+        color: var(--text-color);
+    }
+
+    .assistant-title p {
+        font-size: 0.8rem;
+        margin: 0;
+        opacity: 0.7;
+    }
+
+    #clear-chat {
+        background: transparent;
+        border: none;
+        color: #ff5e57;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: transform 0.2s;
+    }
+
+    #clear-chat:hover {
+        transform: scale(1.1);
+    }
+
+    .chat-window {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        background: radial-gradient(circle at top right, rgba(58, 123, 213, 0.05), transparent);
+    }
+
+    .message {
+        max-width: 80%;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .message.assistant {
+        align-self: flex-start;
+    }
+
+    .message.user {
+        align-self: flex-end;
+    }
+
+    .message-content {
+        padding: 12px 18px;
+        border-radius: 18px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .assistant .message-content {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-bottom-left-radius: 4px;
+    }
+
+    .user .message-content {
+        background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+
+    .message-time {
+        font-size: 0.7rem;
+        opacity: 0.5;
+        margin: 0 5px;
+    }
+
+    .user .message-time {
+        align-self: flex-end;
+    }
+
+    .chat-input-area {
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.03);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .suggestions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        scrollbar-width: none;
+    }
+
+    .suggestions::-webkit-scrollbar {
+        display: none;
+    }
+
+    .suggestion-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ddd;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .suggestion-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: #3a7bd5;
+        color: #fff;
+    }
+
+    .chat-form {
+        display: flex;
+        gap: 10px;
+    }
+
+    #user-input {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 12px 20px;
+        color: white;
+        font-family: inherit;
+        transition: border-color 0.3s;
+    }
+
+    #user-input:focus {
+        outline: none;
+        border-color: #3a7bd5;
+    }
+
+    #send-btn {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        cursor: pointer;
+        transition: transform 0.2s, background 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    #send-btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+    }
+
+    /* Typing Animation */
+    .typing {
+        display: flex;
+        gap: 5px;
+        padding: 10px;
+    }
+
+    .typing span {
+        width: 8px;
+        height: 8px;
+        background: #aaa;
+        border-radius: 50%;
+        animation: typing 1s infinite alternate;
+    }
+
+    .typing span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .typing span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+        from {
+            opacity: 0.3;
+            transform: scale(0.8);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+    }
+
+    @media (max-width: 600px) {
+        .assistant-container {
+            height: calc(100vh - 120px);
+            margin: 10px;
+        }
+
+        .message {
+            max-width: 90%;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const chatWindow = document.getElementById('chat-window');
+        const clearChatBtn = document.getElementById('clear-chat');
+        const suggestionBtns = document.querySelectorAll('.suggestion-btn');
+
+        const addMessage = (content, type = 'user') => {
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+
+            // Escape content to prevent XSS but allow some markdown-like formatting if needed
+            // For simplicity, just using textContent for now, but Gemini often returns markdown
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            // Handle markdown-like formatting for bold and lists
+            let formattedContent = content
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+
+            contentDiv.innerHTML = formattedContent;
+
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = time;
+
+            messageDiv.appendChild(contentDiv);
+            messageDiv.appendChild(timeDiv);
+            chatWindow.appendChild(messageDiv);
+
+            // Scroll to bottom
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        };
+
+        const addTypingIndicator = () => {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message assistant typing-indicator';
+            typingDiv.innerHTML = `
+            <div class="message-content typing">
+                <span></span><span></span><span></span>
+            </div>
+        `;
+            chatWindow.appendChild(typingDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            return typingDiv;
+        };
+
+        const handleChat = async (message) => {
+            if (!message.trim()) return;
+
+            addMessage(message, 'user');
+            userInput.value = '';
+
+            const typingIndicator = addTypingIndicator();
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+                typingIndicator.remove();
+
+                if (data.response) {
+                    addMessage(data.response, 'assistant');
+                } else {
+                    addMessage("I'm sorry, I encountered an error. Please try again later.", 'assistant');
+                }
+            } catch (error) {
+                typingIndicator.remove();
+                addMessage("Unable to connect to the assistant. Please check your connection.", 'assistant');
+            }
+        };
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleChat(userInput.value);
+        });
+
+        clearChatBtn.addEventListener('click', () => {
+            if (confirm('Clear all messages?')) {
+                const firstMessage = chatWindow.firstElementChild;
+                chatWindow.innerHTML = '';
+                chatWindow.appendChild(firstMessage);
+            }
+        });
+
+        suggestionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                handleChat(btn.textContent);
+            });
+        });
+    });
+</script>
+{% endblock %}

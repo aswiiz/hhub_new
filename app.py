@@ -7,10 +7,24 @@ import os
 import joblib
 import numpy as np
 from functools import wraps
+from openai import OpenAI
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 # Get secret key from environment or generate a random one for development
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
+
+# SambaNova API setup
+SAMBANOVA_API_KEY = os.environ.get('SAMBANOVA_API_KEY')
+client = None
+if SAMBANOVA_API_KEY:
+    client = OpenAI(
+        api_key=SAMBANOVA_API_KEY,
+        base_url="https://api.sambanova.ai/v1",
+    )
 
 # Load the trained model
 MODEL_PATH = os.path.join(os.path.dirname(__file__), 'health_model.pkl')
@@ -69,6 +83,41 @@ def analyze():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+@app.route('/assistant')
+@login_required
+def assistant():
+    return render_template('chatbot.html')
+
+@app.route('/api/chat', methods=['POST'])
+@login_required
+def chat():
+    data = request.json
+    message = data.get('message')
+    
+    if not message:
+        return jsonify({'error': 'Message is required'}), 400
+        
+    if not client:
+        return jsonify({'response': "I'm sorry, I'm currently in 'offline mode' (SAMBANOVA_API_KEY not configured). "
+                                    "Please add your API key to the server environment."})
+        
+    try:
+        response = client.chat.completions.create(
+            model='Meta-Llama-3.1-8B-Instruct', # or another SambaNova model
+            messages=[
+                {"role": "system", "content": "You are a Health Care Hub AI Assistant. Your goal is to help users with their health-related doubts based on general medical knowledge. Always provide empathetic and informative responses. IMPORTANT: If the user asks for a diagnosis or serious medical advice, ALWAYS include a disclaimer that you are an AI and they should consult a professional doctor."},
+                {"role": "user", "content": message}
+            ],
+            temperature=0.1,
+            top_p=0.1
+        )
+        
+        return jsonify({'response': response.choices[0].message.content})
+        
+    except Exception as e:
+        print(f"SambaNova API Error: {str(e)}")
+        return jsonify({'error': 'Failed to get response from AI'}), 500
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
