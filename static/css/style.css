@@ -11,6 +11,7 @@
     --border: #e2e8f0;
     --card-bg: #ffffff;
     --nav-bg: rgba(255, 255, 255, 0.8);
+    --hover: #f1f5f9;
     --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -24,6 +25,8 @@
     --border: #334155;
     --card-bg: #1e293b;
     --nav-bg: rgba(15, 23, 42, 0.8);
+    --hover: #334155;
+    --primary-light: rgba(37, 99, 235, 0.2);
     --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
 }
 
@@ -174,6 +177,12 @@ body {
     text-align: center;
     font-size: 0.9rem;
     border: 1px solid #fecaca;
+}
+
+[data-theme="dark"] .error-banner {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.3);
 }
 
 .nav-links a:hover,
@@ -377,6 +386,7 @@ body {
 .option-item:hover {
     background: var(--primary-light);
     border-color: var(--primary);
+    color: var(--text);
 }
 
 .option-item input {
@@ -478,6 +488,12 @@ body {
     animation: fadeIn 0.3s ease;
 }
 
+[data-theme="dark"] .success-banner {
+    background: rgba(34, 197, 94, 0.1);
+    color: #4ade80;
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -570,12 +586,16 @@ input:checked+.slider:before {
     font-weight: 600;
 }
 
+[data-theme="dark"] .health-table th {
+    color: var(--primary);
+}
+
 .health-table tr:last-child td {
     border-bottom: none;
 }
 
 .health-table tr:hover {
-    background-color: #f1f5f9;
+    background-color: var(--hover);
 }
 
 .metrics-summary {
@@ -614,7 +634,7 @@ input:checked+.slider:before {
 }
 
 .btn-outline:hover {
-    background: var(--bg);
+    background: var(--hover);
     color: var(--text);
 }
 
