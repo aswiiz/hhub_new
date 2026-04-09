@@ -48,21 +48,20 @@
     .assistant-container {
         max-width: 900px;
         margin: 20px auto;
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--white);
+        border: 1px solid var(--border);
         border-radius: 20px;
         display: flex;
         flex-direction: column;
         height: calc(100vh - 180px);
         overflow: hidden;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--shadow-lg);
     }
 
     .assistant-header {
         padding: 20px;
-        background: rgba(255, 255, 255, 0.03);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        background: #f8fafc;
+        border-bottom: 1px solid var(--border);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -94,14 +93,14 @@
         width: 12px;
         height: 12px;
         background: #4cd137;
-        border: 2px solid #1a1a1a;
+        border: 2px solid white;
         border-radius: 50%;
     }
 
     .assistant-title h1 {
         font-size: 1.2rem;
         margin: 0;
-        color: var(--text-color);
+        color: var(--text);
     }
 
     .assistant-title p {
@@ -130,7 +129,7 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
-        background: radial-gradient(circle at top right, rgba(58, 123, 213, 0.05), transparent);
+        background: #ffffff;
     }
 
     .message {
@@ -156,9 +155,10 @@
     }
 
     .assistant .message-content {
-        background: rgba(255, 255, 255, 0.1);
-        color: #fff;
+        background: #f1f5f9;
+        color: var(--text);
         border-bottom-left-radius: 4px;
+        border: 1px solid #e2e8f0;
     }
 
     .user .message-content {
@@ -179,8 +179,8 @@
 
     .chat-input-area {
         padding: 20px;
-        background: rgba(255, 255, 255, 0.03);
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        background: #f8fafc;
+        border-top: 1px solid var(--border);
     }
 
     .suggestions {
@@ -197,9 +197,9 @@
     }
 
     .suggestion-btn {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #ddd;
+        background: var(--white);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
         padding: 8px 15px;
         border-radius: 20px;
         font-size: 0.85rem;
@@ -221,11 +221,11 @@
 
     #user-input {
         flex: 1;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--white);
+        border: 1px solid var(--border);
         border-radius: 12px;
         padding: 12px 20px;
-        color: white;
+        color: var(--text);
         font-family: inherit;
         transition: border-color 0.3s;
     }
