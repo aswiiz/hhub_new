@@ -65,11 +65,23 @@
 ---
 
 ## 8. Technical Architecture
-*   **Backend**: Python Flask (Robust & Flexible).
-*   **Database**: MongoDB Atlas (Scalable NoSQL).
-*   **ML Stack**: Scikit-Learn, Joblib, NumPy, Pandas.
-*   **Frontend**: Vanilla JS (ES6), HTML5, CSS3 Variables.
-*   **Security**: Werkzeug Hashing, Flask Session Management.
+### Backend & Database
+*   **Backend**: Python Flask (Robust & Flexible)
+*   **Database**: MongoDB Atlas (Scalable NoSQL)
+
+### AI & Machine Learning Stack
+*   **Libraries**: Scikit-Learn, Joblib, NumPy, Pandas
+*   **Primary AI**: SambaNova Cloud (Llama-3.1-8B-Instruct) for Chatbot
+
+### Algorithms Used
+*   **Random Forest Algorithm**: Used for medical risk prediction.
+*   **Rule-Based Health Assessment**: Fallback logic for health scoring.
+*   **BMI Calculation Algorithm**: Automated BMI tracking from persistent data.
+*   **Data Aggregation Algorithm**: 3-7 day temporal windowing for accuracy.
+
+### Frontend & Security
+*   **Frontend**: Vanilla JS (ES6), HTML5, CSS3 Variables (Custom Themes)
+*   **Security**: Werkzeug Password Hashing, Flask Session Management
 
 ---
 
